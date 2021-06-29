@@ -1890,7 +1890,8 @@ void GMainWindow::RemoveCustomConfiguration(u64 program_id, const std::string& g
     }
 }
 
-void GMainWindow::OnGameListDumpRomFS(u64 program_id, const std::string& game_path) {
+void GMainWindow::OnGameListDumpRomFS(u64 program_id, const std::string& game_path,
+                                      DumpRomFSTarget target) {
     const auto failed = [this] {
         QMessageBox::warning(this, tr("RomFS Extraction Failed!"),
                              tr("There was an error copying the RomFS files or the user "
@@ -1918,7 +1919,10 @@ void GMainWindow::OnGameListDumpRomFS(u64 program_id, const std::string& game_pa
         return;
     }
 
-    const auto dump_dir = Common::FS::GetYuzuPath(Common::FS::YuzuPath::DumpDir);
+    const auto dump_dir =
+        target == DumpRomFSTarget::Normal
+            ? Common::FS::GetYuzuPath(Common::FS::YuzuPath::DumpDir)
+            : Common::FS::GetYuzuPath(Common::FS::YuzuPath::SDMCDir) / "atmosphere" / "contents";
     const auto romfs_dir = fmt::format("{:016X}/romfs", *romfs_title_id);
 
     const auto path = Common::FS::PathToUTF8String(dump_dir / romfs_dir);
@@ -1928,7 +1932,8 @@ void GMainWindow::OnGameListDumpRomFS(u64 program_id, const std::string& game_pa
     if (*romfs_title_id == program_id) {
         const u64 ivfc_offset = loader->ReadRomFSIVFCOffset();
         const FileSys::PatchManager pm{program_id, system.GetFileSystemController(), installed};
-        romfs = pm.PatchRomFS(file, ivfc_offset, FileSys::ContentRecordType::Program);
+        romfs =
+            pm.PatchRomFS(file, ivfc_offset, FileSys::ContentRecordType::Program, nullptr, false);
     } else {
         romfs = installed.GetEntry(*romfs_title_id, FileSys::ContentRecordType::Data)->GetRomFS();
     }
