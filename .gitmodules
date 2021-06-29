@@ -46,3 +46,6 @@
 [submodule "externals/cpp-httplib"]
 	path = externals/cpp-httplib
 	url = https://github.com/yhirose/cpp-httplib.git
+[submodule "externals/sentry-native"]
+	path = externals/sentry-native
+	url = https://github.com/getsentry/sentry-native

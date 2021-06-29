@@ -165,6 +165,8 @@ add_executable(yuzu
     yuzu.rc
 )
 
+target_link_libraries(yuzu PRIVATE sentry)
+
 file(GLOB COMPAT_LIST
      ${PROJECT_BINARY_DIR}/dist/compatibility_list/compatibility_list.qrc
      ${PROJECT_BINARY_DIR}/dist/compatibility_list/compatibility_list.json)

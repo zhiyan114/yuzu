@@ -133,6 +133,8 @@ static FileSys::VirtualFile VfsDirectoryCreateFileWrapper(const FileSys::Virtual
 Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin);
 #endif
 
+#include <sentry.h>
+
 #ifdef _WIN32
 #include <windows.h>
 extern "C" {
@@ -205,6 +207,11 @@ GMainWindow::GMainWindow()
     : input_subsystem{std::make_shared<InputCommon::InputSubsystem>()},
       config{std::make_unique<Config>()}, vfs{std::make_shared<FileSys::RealVfsFilesystem>()},
       provider{std::make_unique<FileSys::ManualContentProvider>()} {
+    sentry_options_t *options = sentry_options_new();
+    sentry_options_set_dsn(options, "https://3f821c66816e47d1996db40b1107fd36@o125145.ingest.sentry.io/5839785");
+    sentry_options_set_release(options, ("Yuzu@"+std::string(Common::g_build_id)).c_str());
+    sentry_init(options);
+
     InitializeLogging();
 
     LoadTranslation();
@@ -369,6 +376,7 @@ GMainWindow::~GMainWindow() {
     // will get automatically deleted otherwise
     if (render_window->parent() == nullptr)
         delete render_window;
+    sentry_close();
 }
 
 void GMainWindow::RegisterMetaTypes() {

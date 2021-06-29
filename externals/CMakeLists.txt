@@ -50,6 +50,10 @@ if (NOT LIBUSB_FOUND OR YUZU_USE_BUNDLED_LIBUSB)
     add_subdirectory(libusb)
 endif()
 
+# sentry-native
+add_subdirectory(sentry-native EXCLUDE_FROM_ALL)
+target_include_directories(sentry INTERFACE ./sentry-native/include)
+
 # SDL2
 if (NOT SDL2_FOUND AND ENABLE_SDL2)
     if (NOT WIN32)
